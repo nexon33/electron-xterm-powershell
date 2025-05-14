@@ -1,21 +1,28 @@
 {
-  "name": "electron-xterm-minimal",
+  "name": "electron-xterm-powershell",
   "version": "1.0.0",
-  "description": "Simple terminal emulator using xterm.js and Electron",
+  "description": "Terminal emulator using xterm.js and Electron with real PowerShell",
   "main": "main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "rebuild": "electron-rebuild -f -w node-pty"
   },
   "keywords": [
     "electron",
     "xterm",
-    "terminal"
+    "terminal",
+    "powershell"
   ],
   "author": "",
   "license": "MIT",
   "dependencies": {
     "electron": "^27.0.0",
+    "node-pty": "^1.1.0-beta34",
     "xterm": "^5.1.0",
     "xterm-addon-fit": "^0.7.0"
+  },
+  "devDependencies": {
+    "electron-rebuild": "^3.2.9",
+    "node-gyp": "^11.2.0"
   }
 }

@@ -1,8 +1,11 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
+const os = require('os');
+const pty = require('node-pty');
 
 // Keep a global reference of the window object to prevent garbage collection
 let mainWindow;
+let ptyProcess;
 
 function createWindow() {
   // Create the browser window
@@ -23,7 +26,7 @@ function createWindow() {
 
   // Open DevTools for debugging (optional)
   // mainWindow.webContents.openDevTools();
-  
+
   // Ensure proper rendering on resize
   mainWindow.on('resize', () => {
     mainWindow.webContents.send('window-resize');
@@ -34,29 +37,32 @@ function createWindow() {
 app.whenReady().then(() => {
   createWindow();
 
-  // Set up IPC communication for simulated terminal
-  ipcMain.handle('terminal:command', (event, command) => {
-    // Simulate command execution with basic responses
-    let response = '';
-    
-    if (command.trim() === 'help') {
-      response = 'Available commands:\n- help: Show this help\n- hello: Say hello\n- date: Show current date\n- version: Show Node.js version\n- exit: Exit the application';
-    } else if (command.trim() === 'hello') {
-      response = 'Hello from Electron!';
-    } else if (command.trim() === 'date') {
-      response = `Current date: ${new Date().toLocaleString()}`;
-    } else if (command.trim() === 'version') {
-      response = `Node.js version: ${process.versions.node}\nElectron version: ${process.versions.electron}`;
-    } else if (command.trim() === 'exit') {
-      app.quit();
-      return { success: true, response: 'Exiting...' };
-    } else if (command.trim() === '') {
-      response = '';
-    } else {
-      response = `Command not found: ${command}. Type 'help' for available commands.`;
+  // Initialize PTY process with PowerShell
+  const shell = process.platform === 'win32' ? 'powershell.exe' : 'bash';
+  
+  ptyProcess = pty.spawn(shell, [], {
+    name: 'xterm-color',
+    cols: 80,
+    rows: 30,
+    cwd: process.env.HOME || process.env.USERPROFILE,
+    env: process.env
+  });
+
+  // Handle data events from the PTY
+  ptyProcess.onData(data => {
+    mainWindow.webContents.send('terminal:data', data);
+  });
+
+  // Set up IPC communication for PTY
+  ipcMain.on('terminal:input', (event, data) => {
+    ptyProcess.write(data);
+  });
+
+  // Handle terminal resize events
+  ipcMain.on('terminal:resize', (event, cols, rows) => {
+    if (ptyProcess) {
+      ptyProcess.resize(cols, rows);
     }
-    
-    return { success: true, response };
   });
 
   // Re-create the window if it was closed and the app is activated (macOS)
@@ -67,5 +73,10 @@ app.whenReady().then(() => {
 
 // Quit when all windows are closed, except on macOS
 app.on('window-all-closed', function () {
+  if (ptyProcess) {
+    ptyProcess.kill();
+    ptyProcess = null;
+  }
+  
   if (process.platform !== 'darwin') app.quit();
 });
