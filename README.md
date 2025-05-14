@@ -3,6 +3,8 @@
 ### 1. Purpose
 The project is an advanced terminal emulator built using Electron and xterm.js, providing a PowerShell terminal experience within a desktop application. It allows users to interact with a PowerShell (or bash on non-Windows systems) shell in a customizable and feature-rich environment.
 
+![Image](image.png)
+
 ### 2. Key Technologies, Frameworks, and Libraries
 *   **Electron:** Used to build the cross-platform desktop application.
 *   **xterm.js:** A terminal emulator component for the front-end.
