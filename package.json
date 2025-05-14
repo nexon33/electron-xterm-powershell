@@ -1,0 +1,21 @@
+{
+  "name": "electron-xterm-minimal",
+  "version": "1.0.0",
+  "description": "Simple terminal emulator using xterm.js and Electron",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "keywords": [
+    "electron",
+    "xterm",
+    "terminal"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "electron": "^27.0.0",
+    "xterm": "^5.1.0",
+    "xterm-addon-fit": "^0.7.0"
+  }
+}
