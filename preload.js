@@ -4,43 +4,166 @@ const { contextBridge, ipcRenderer } = require('electron');
 // the ipcRenderer without exposing the entire object
 contextBridge.exposeInMainWorld(
   'api', {
-    // Send terminal input to the main process
-    sendInput: (data) => {
-      ipcRenderer.send('terminal:input', data);
+    // Terminal management
+    createTerminal: () => ipcRenderer.invoke('terminal:create'),
+    
+    sendTerminalInput: (id, data) => {
+      ipcRenderer.send('terminal:input', { id, data });
     },
-
-    // Resize the terminal
-    resizeTerminal: (cols, rows) => {
-      ipcRenderer.send('terminal:resize', cols, rows);
+    
+    resizeTerminal: (id, cols, rows) => {
+      ipcRenderer.send('terminal:resize', { id, cols, rows });
     },
-
-    // Listen for terminal data from the main process
+    
+    closeTerminal: (id) => {
+      ipcRenderer.send('terminal:close', { id });
+    },
+    
     onTerminalData: (callback) => {
       if (typeof callback !== 'function') {
         throw new Error('Callback must be a function');
       }
-
+      
       ipcRenderer.on('terminal:data', (event, data) => {
         callback(data);
       });
-
+      
       return () => {
         ipcRenderer.removeAllListeners('terminal:data');
       };
     },
-
-    // Listen for window resize events from the main process
-    onWindowResize: (callback) => {
+    
+    onTerminalExit: (callback) => {
       if (typeof callback !== 'function') {
         throw new Error('Callback must be a function');
       }
-
-      ipcRenderer.on('window-resize', () => {
+      
+      ipcRenderer.on('terminal:exit', (event, data) => {
+        callback(data);
+      });
+      
+      return () => {
+        ipcRenderer.removeAllListeners('terminal:exit');
+      };
+    },
+    
+    // Settings management
+    getSettings: () => ipcRenderer.invoke('settings:get'),
+    
+    setSettings: (settings) => {
+      ipcRenderer.send('settings:set', settings);
+    },
+    
+    // Menu event handlers
+    onMenuNewTerminal: (callback) => {
+      if (typeof callback !== 'function') {
+        throw new Error('Callback must be a function');
+      }
+      
+      ipcRenderer.on('menu:new-terminal', () => {
         callback();
       });
-
+      
       return () => {
-        ipcRenderer.removeAllListeners('window-resize');
+        ipcRenderer.removeAllListeners('menu:new-terminal');
+      };
+    },
+    
+    onMenuFind: (callback) => {
+      if (typeof callback !== 'function') {
+        throw new Error('Callback must be a function');
+      }
+      
+      ipcRenderer.on('menu:find', () => {
+        callback();
+      });
+      
+      return () => {
+        ipcRenderer.removeAllListeners('menu:find');
+      };
+    },
+    
+    onMenuSettings: (callback) => {
+      if (typeof callback !== 'function') {
+        throw new Error('Callback must be a function');
+      }
+      
+      ipcRenderer.on('menu:settings', () => {
+        callback();
+      });
+      
+      return () => {
+        ipcRenderer.removeAllListeners('menu:settings');
+      };
+    },
+    
+    onMenuClear: (callback) => {
+      if (typeof callback !== 'function') {
+        throw new Error('Callback must be a function');
+      }
+      
+      ipcRenderer.on('menu:clear', () => {
+        callback();
+      });
+      
+      return () => {
+        ipcRenderer.removeAllListeners('menu:clear');
+      };
+    },
+    
+    onMenuToggleTheme: (callback) => {
+      if (typeof callback !== 'function') {
+        throw new Error('Callback must be a function');
+      }
+      
+      ipcRenderer.on('menu:toggle-theme', () => {
+        callback();
+      });
+      
+      return () => {
+        ipcRenderer.removeAllListeners('menu:toggle-theme');
+      };
+    },
+    
+    onMenuNextTab: (callback) => {
+      if (typeof callback !== 'function') {
+        throw new Error('Callback must be a function');
+      }
+      
+      ipcRenderer.on('menu:next-tab', () => {
+        callback();
+      });
+      
+      return () => {
+        ipcRenderer.removeAllListeners('menu:next-tab');
+      };
+    },
+    
+    onMenuPrevTab: (callback) => {
+      if (typeof callback !== 'function') {
+        throw new Error('Callback must be a function');
+      }
+      
+      ipcRenderer.on('menu:prev-tab', () => {
+        callback();
+      });
+      
+      return () => {
+        ipcRenderer.removeAllListeners('menu:prev-tab');
+      };
+    },
+    
+    onMenuAbout: (callback) => {
+      if (typeof callback !== 'function') {
+        throw new Error('Callback must be a function');
+      }
+      
+      ipcRenderer.on('menu:about', () => {
+        callback();
+      });
+      
+      return () => {
+        ipcRenderer.removeAllListeners('menu:about');
       };
     }
   }
