@@ -373,7 +373,7 @@ class TerminalManager {
     this.terminals[id].term.write(exitMessage);
     
     // Disable input
-    this.terminals[id].term.setOption('disableStdin', true);
+    this.terminals[id].term.options.disableStdin = true;
     
     // Update tab title
     this.updateTabTitle(id, 'Closed');
@@ -398,12 +398,12 @@ class TerminalManager {
     Object.values(this.terminals).forEach(terminal => {
       const { term } = terminal;
       
-      term.setOption('fontFamily', this.settings.appearance.fontFamily);
-      term.setOption('fontSize', this.settings.appearance.fontSize);
-      term.setOption('cursorStyle', this.settings.appearance.cursorStyle);
-      term.setOption('cursorBlink', this.settings.appearance.cursorBlink);
-      term.setOption('theme', this.themes[this.settings.appearance.theme]);
-      term.setOption('scrollback', this.settings.terminal.scrollback);
+      term.options.fontFamily = this.settings.appearance.fontFamily;
+      term.options.fontSize = this.settings.appearance.fontSize;
+      term.options.cursorStyle = this.settings.appearance.cursorStyle;
+      term.options.cursorBlink = this.settings.appearance.cursorBlink;
+      term.options.theme = this.themes[this.settings.appearance.theme];
+      term.options.scrollback = this.settings.terminal.scrollback;
       
       // Resize after settings change
       terminal.fitAddon.fit();
@@ -498,7 +498,7 @@ class TerminalManager {
     
     // Update terminal themes
     Object.values(this.terminals).forEach(terminal => {
-      terminal.term.setOption('theme', this.themes[theme]);
+      terminal.term.options.theme = this.themes[theme];
     });
   }
 }
