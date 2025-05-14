@@ -6,14 +6,21 @@ class UIManager {
   constructor() {
     this.contextMenu = null;
     this.settingsModal = null;
+    this.activeMenu = null;
     this.initialized = false;
     
     // Bind methods
     this.init = this.init.bind(this);
-    this.setupToolbarHandlers = this.setupToolbarHandlers.bind(this);
+    this.setupWindowControls = this.setupWindowControls.bind(this);
+    this.setupMenuHandlers = this.setupMenuHandlers.bind(this);
+    this.setupActionButtonHandlers = this.setupActionButtonHandlers.bind(this);
+    this.setupDropdownMenuHandlers = this.setupDropdownMenuHandlers.bind(this);
     this.setupContextMenu = this.setupContextMenu.bind(this);
     this.setupSettingsModal = this.setupSettingsModal.bind(this);
+    this.setupInlineSearch = this.setupInlineSearch.bind(this);
     this.setupResizeHandlers = this.setupResizeHandlers.bind(this);
+    this.showDropdownMenu = this.showDropdownMenu.bind(this);
+    this.hideDropdownMenus = this.hideDropdownMenus.bind(this);
     this.showContextMenu = this.showContextMenu.bind(this);
     this.hideContextMenu = this.hideContextMenu.bind(this);
     this.showSettingsModal = this.showSettingsModal.bind(this);
@@ -21,6 +28,7 @@ class UIManager {
     this.populateSettingsForm = this.populateSettingsForm.bind(this);
     this.saveSettings = this.saveSettings.bind(this);
     this.toggleTheme = this.toggleTheme.bind(this);
+    this.toggleInlineSearch = this.toggleInlineSearch.bind(this);
   }
 
   /**
@@ -31,10 +39,15 @@ class UIManager {
     
     this.contextMenu = document.getElementById('context-menu');
     this.settingsModal = document.getElementById('settings-modal');
+    this.inlineSearch = document.getElementById('inline-search');
     
-    this.setupToolbarHandlers();
+    this.setupWindowControls();
+    this.setupMenuHandlers();
+    this.setupActionButtonHandlers();
+    this.setupDropdownMenuHandlers();
     this.setupContextMenu();
     this.setupSettingsModal();
+    this.setupInlineSearch();
     this.setupResizeHandlers();
     
     // Apply theme from settings
@@ -42,14 +55,57 @@ class UIManager {
       document.documentElement.className = `theme-${settings.appearance.theme}`;
     });
     
+    // Document click handler to close dropdowns
+    document.addEventListener('click', (e) => {
+      // If click is not in a menu item, hide all dropdowns
+      if (!e.target.closest('.menu-item')) {
+        this.hideDropdownMenus();
+      }
+    });
+    
     this.initialized = true;
   }
 
   /**
-   * Set up toolbar button event handlers
+   * Set up window control buttons
    */
-  setupToolbarHandlers() {
-    // New tab button
+  setupWindowControls() {
+    // Minimize button
+    document.getElementById('minimize-btn').addEventListener('click', () => {
+      window.api.minimizeWindow();
+    });
+    
+    // Maximize button
+    document.getElementById('maximize-btn').addEventListener('click', () => {
+      window.api.maximizeWindow();
+    });
+    
+    // Close button
+    document.getElementById('close-btn').addEventListener('click', () => {
+      window.api.closeWindow();
+    });
+  }
+
+  /**
+   * Set up menu handlers
+   */
+  setupMenuHandlers() {
+    const menuItems = document.querySelectorAll('.menu-item');
+    
+    menuItems.forEach(item => {
+      item.addEventListener('click', (e) => {
+        const menuName = item.dataset.menu;
+        this.showDropdownMenu(menuName);
+        e.stopPropagation();
+      });
+    });
+  }
+
+  /**
+   * Set up action button handlers
+   */
+  setupActionButtonHandlers() {
+    // New terminal button
     document.getElementById('new-tab-btn').addEventListener('click', () => {
       window.terminalManager.createTerminal();
     });
@@ -66,7 +122,7 @@ class UIManager {
     
     // Search button
     document.getElementById('search-btn').addEventListener('click', () => {
-      window.terminalManager.findInActiveTerminal();
+      this.toggleInlineSearch();
     });
     
     // Clear button
@@ -77,6 +133,117 @@ class UIManager {
     // Theme toggle button
     document.getElementById('theme-toggle-btn').addEventListener('click', () => {
       this.toggleTheme();
+    });
+  }
+
+  /**
+   * Set up dropdown menu handlers
+   */
+  setupDropdownMenuHandlers() {
+    // File menu
+    document.getElementById('menu-new-terminal').addEventListener('click', () => {
+      window.terminalManager.createTerminal();
+      this.hideDropdownMenus();
+    });
+    
+    document.getElementById('menu-settings').addEventListener('click', () => {
+      this.showSettingsModal();
+      this.hideDropdownMenus();
+    });
+    
+    document.getElementById('menu-exit').addEventListener('click', () => {
+      window.api.closeWindow();
+      this.hideDropdownMenus();
+    });
+    
+    // Edit menu
+    document.getElementById('menu-copy').addEventListener('click', () => {
+      document.execCommand('copy');
+      this.hideDropdownMenus();
+    });
+    
+    document.getElementById('menu-paste').addEventListener('click', () => {
+      navigator.clipboard.readText()
+        .then(text => {
+          if (window.terminalManager.activeTerminalId) {
+            window.api.sendTerminalInput(
+              window.terminalManager.activeTerminalId, 
+              text
+            );
+          }
+        });
+      this.hideDropdownMenus();
+    });
+    
+    document.getElementById('menu-select-all').addEventListener('click', () => {
+      if (window.terminalManager.activeTerminalId) {
+        window.terminalManager.terminals[window.terminalManager.activeTerminalId].term.selectAll();
+      }
+      this.hideDropdownMenus();
+    });
+    
+    // View menu
+    document.getElementById('menu-toggle-theme').addEventListener('click', () => {
+      this.toggleTheme();
+      this.hideDropdownMenus();
+    });
+    
+    document.getElementById('menu-increase-font').addEventListener('click', () => {
+      if (window.terminalManager.settings.appearance.fontSize < 32) {
+        window.terminalManager.settings.appearance.fontSize += 1;
+        window.terminalManager.updateAllTerminals();
+      }
+      this.hideDropdownMenus();
+    });
+    
+    document.getElementById('menu-decrease-font').addEventListener('click', () => {
+      if (window.terminalManager.settings.appearance.fontSize > 8) {
+        window.terminalManager.settings.appearance.fontSize -= 1;
+        window.terminalManager.updateAllTerminals();
+      }
+      this.hideDropdownMenus();
+    });
+    
+    document.getElementById('menu-fullscreen').addEventListener('click', () => {
+      window.api.toggleFullscreen();
+      this.hideDropdownMenus();
+    });
+    
+    // Terminal menu
+    document.getElementById('menu-clear').addEventListener('click', () => {
+      window.terminalManager.clearActiveTerminal();
+      this.hideDropdownMenus();
+    });
+    
+    document.getElementById('menu-next-tab').addEventListener('click', () => {
+      const tabIds = Object.keys(window.terminalManager.terminals);
+      if (tabIds.length <= 1) return;
+      
+      const currentIndex = tabIds.indexOf(window.terminalManager.activeTerminalId);
+      const nextIndex = (currentIndex + 1) % tabIds.length;
+      window.terminalManager.setActiveTerminal(tabIds[nextIndex]);
+      this.hideDropdownMenus();
+    });
+    
+    document.getElementById('menu-prev-tab').addEventListener('click', () => {
+      const tabIds = Object.keys(window.terminalManager.terminals);
+      if (tabIds.length <= 1) return;
+      
+      const currentIndex = tabIds.indexOf(window.terminalManager.activeTerminalId);
+      const prevIndex = (currentIndex - 1 + tabIds.length) % tabIds.length;
+      window.terminalManager.setActiveTerminal(tabIds[prevIndex]);
+      this.hideDropdownMenus();
+    });
+    
+    // Help menu
+    document.getElementById('menu-keyboard-shortcuts').addEventListener('click', () => {
+      // Show keyboard shortcuts
+      this.hideDropdownMenus();
+    });
+    
+    document.getElementById('menu-about').addEventListener('click', () => {
+      // Show about dialog
+      this.hideDropdownMenus();
     });
   }
 
@@ -124,7 +291,7 @@ class UIManager {
             break;
             
           case 'search':
-            window.terminalManager.findInActiveTerminal();
+            this.toggleInlineSearch();
             break;
             
           case 'clear':
@@ -165,16 +332,65 @@ class UIManager {
         this.hideSettingsModal();
       }
     });
+  }
+
+  /**
+   * Set up inline search
+   */
+  setupInlineSearch() {
+    const searchInput = document.getElementById('inline-search-input');
+    const prevBtn = document.getElementById('inline-search-prev');
+    const nextBtn = document.getElementById('inline-search-next');
+    const closeBtn = document.getElementById('inline-search-close');
     
-    // Handle ESC key
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') {
-        this.hideSettingsModal();
-        this.hideContextMenu();
-        
-        // Hide search panel
-        const searchPanel = document.getElementById('search-panel');
-        searchPanel.classList.remove('show');
+    // Search as you type
+    searchInput.addEventListener('input', () => {
+      const query = searchInput.value;
+      if (query && window.terminalManager.activeTerminalId) {
+        window.terminalManager.terminals[window.terminalManager.activeTerminalId].searchAddon.findNext(query);
+      }
+    });
+    
+    // Previous match
+    prevBtn.addEventListener('click', () => {
+      const query = searchInput.value;
+      if (query && window.terminalManager.activeTerminalId) {
+        window.terminalManager.terminals[window.terminalManager.activeTerminalId].searchAddon.findPrevious(query);
+      }
+    });
+    
+    // Next match
+    nextBtn.addEventListener('click', () => {
+      const query = searchInput.value;
+      if (query && window.terminalManager.activeTerminalId) {
+        window.terminalManager.terminals[window.terminalManager.activeTerminalId].searchAddon.findNext(query);
+      }
+    });
+    
+    // Close search
+    closeBtn.addEventListener('click', () => {
+      this.toggleInlineSearch(false);
+      if (window.terminalManager.activeTerminalId) {
+        window.terminalManager.terminals[window.terminalManager.activeTerminalId].term.focus();
+      }
+    });
+    
+    // Key events
+    searchInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        const query = searchInput.value;
+        if (query && window.terminalManager.activeTerminalId) {
+          if (e.shiftKey) {
+            window.terminalManager.terminals[window.terminalManager.activeTerminalId].searchAddon.findPrevious(query);
+          } else {
+            window.terminalManager.terminals[window.terminalManager.activeTerminalId].searchAddon.findNext(query);
+          }
+        }
+      } else if (e.key === 'Escape') {
+        this.toggleInlineSearch(false);
+        if (window.terminalManager.activeTerminalId) {
+          window.terminalManager.terminals[window.terminalManager.activeTerminalId].term.focus();
+        }
       }
     });
   }
@@ -194,6 +410,66 @@ class UIManager {
       window.terminalManager.resizeActiveTerminal();
     });
     resizeObserver.observe(terminalsContainer);
+    
+    // Handle Escape key for closing menus and dialogs
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        this.hideDropdownMenus();
+        this.hideContextMenu();
+        this.toggleInlineSearch(false);
+        
+        // Only hide settings modal if it's open
+        if (this.settingsModal.classList.contains('show')) {
+          this.hideSettingsModal();
+        }
+      }
+    });
+  }
+
+  /**
+   * Show dropdown menu
+   */
+  showDropdownMenu(menuName) {
+    // First hide all dropdown menus
+    this.hideDropdownMenus();
+    
+    // Then show the one we want
+    const menuElement = document.getElementById(`${menuName}-menu`);
+    if (menuElement) {
+      // Position the menu
+      const menuItem = document.querySelector(`.menu-item[data-menu="${menuName}"]`);
+      const menuRect = menuItem.getBoundingClientRect();
+      
+      menuElement.style.left = `${menuRect.left}px`;
+      menuElement.style.top = `${menuRect.bottom}px`;
+      
+      // Show the menu
+      menuElement.classList.add('show');
+      
+      // Set active class on menu item
+      menuItem.classList.add('active');
+      
+      // Store active menu
+      this.activeMenu = menuName;
+    }
+  }
+
+  /**
+   * Hide all dropdown menus
+   */
+  hideDropdownMenus() {
+    // Hide all dropdown menus
+    document.querySelectorAll('.dropdown-menu').forEach(menu => {
+      menu.classList.remove('show');
+    });
+    
+    // Remove active class from all menu items
+    document.querySelectorAll('.menu-item').forEach(item => {
+      item.classList.remove('active');
+    });
+    
+    // Clear active menu
+    this.activeMenu = null;
   }
 
   /**
@@ -244,6 +520,20 @@ class UIManager {
    */
   hideSettingsModal() {
     this.settingsModal.classList.remove('show');
+  }
+
+  /**
+   * Toggle inline search
+   */
+  toggleInlineSearch(force) {
+    const show = force !== undefined ? force : !this.inlineSearch.classList.contains('show');
+    
+    if (show) {
+      this.inlineSearch.classList.add('show');
+      document.getElementById('inline-search-input').focus();
+    } else {
+      this.inlineSearch.classList.remove('show');
+    }
   }
 
   /**

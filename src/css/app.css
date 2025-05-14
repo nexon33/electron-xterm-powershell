@@ -21,67 +21,271 @@ body, html {
   width: 100vw;
 }
 
-/* Header styles */
-.header {
-  height: 40px;
-  background-color: #333;
-  display: flex;
-  align-items: center;
-  padding: 0 10px;
-  -webkit-app-region: drag;
-}
-
-.header h1 {
-  font-size: 16px;
-  margin-right: 20px;
-  color: #f0f0f0;
-}
-
-/* Toolbar styles */
-.toolbar {
-  height: 36px;
+/* Custom Title Bar */
+.title-bar {
+  height: 32px;
   background-color: #252526;
   display: flex;
   align-items: center;
-  padding: 0 10px;
+  justify-content: space-between;
+  -webkit-app-region: drag;
+  z-index: 1000;
+  user-select: none;
+  border-bottom: 1px solid #333;
+}
+
+.title-bar-drag-region {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  height: 100%;
+}
+
+.app-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  margin-left: 8px;
+  color: #f0f0f0;
+}
+
+.app-title {
+  margin-left: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.window-controls {
+  display: flex;
+  height: 100%;
   -webkit-app-region: no-drag;
 }
 
-.toolbar-button {
+.window-control {
+  width: 46px;
+  height: 100%;
+  border: none;
+  background: transparent;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #cccccc;
+  cursor: pointer;
+  outline: none;
+}
+
+.window-control:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.window-control.close:hover {
+  background-color: #e81123;
+}
+
+/* Integrated Menu Bar */
+.integrated-menu-bar {
+  height: 36px;
+  background-color: #333333;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 0 0 10px;
+  z-index: 100;
+  border-bottom: 1px solid #444;
+}
+
+.menu-section {
+  display: flex;
+  align-items: center;
+}
+
+.menu-left {
+  display: flex;
+}
+
+.menu-center {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.menu-right {
+  display: flex;
+  margin-right: 10px;
+}
+
+/* Application Menu */
+.app-menu {
+  display: flex;
+  height: 100%;
+}
+
+.menu-item {
+  padding: 0 15px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+  font-size: 13px;
+  -webkit-app-region: no-drag;
+}
+
+.menu-item:hover {
+  background-color: #3a3a3a;
+}
+
+.menu-item.active {
+  background-color: #3a3a3a;
+}
+
+/* Action Buttons */
+.action-buttons {
+  display: flex;
+  height: 100%;
+}
+
+.action-button {
   background: none;
   border: none;
   color: #cccccc;
-  padding: 6px 10px;
-  margin-right: 5px;
-  border-radius: 3px;
+  padding: 0 12px;
+  height: 100%;
+  cursor: pointer;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  border-radius: 0;
+  -webkit-app-region: no-drag;
+}
+
+.action-button:hover {
+  background-color: #3a3a3a;
+}
+
+.action-button.active {
+  background-color: #3a3a3a;
+}
+
+.button-icon {
+  margin-right: 6px;
+  font-size: 14px;
+}
+
+/* Dropdown Menus */
+.dropdown-menu {
+  position: absolute;
+  top: 68px; /* Title bar + menu bar height */
+  left: 0;
+  background-color: #252526;
+  border: 1px solid #3a3a3a;
+  border-top: none;
+  min-width: 220px;
+  z-index: 1000;
+  display: none;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.dropdown-menu.show {
+  display: block;
+}
+
+.dropdown-item {
+  padding: 8px 15px;
+  color: #cccccc;
   cursor: pointer;
   font-size: 13px;
   display: flex;
   align-items: center;
 }
 
-.toolbar-button:hover {
+.dropdown-item:hover {
   background-color: #3a3a3a;
 }
 
-.toolbar-button.active {
-  background-color: #3a3a3a;
+.menu-icon {
+  width: 16px;
+  text-align: center;
+  margin-right: 10px;
 }
 
-.toolbar-separator {
-  width: 1px;
-  height: 20px;
-  background-color: #555;
-  margin: 0 10px;
+.menu-text {
+  flex: 1;
+}
+
+.menu-shortcut {
+  margin-left: 15px;
+  opacity: 0.6;
+  font-size: 11px;
+}
+
+.dropdown-separator {
+  height: 1px;
+  background-color: #3a3a3a;
+  margin: 4px 0;
+}
+
+/* Inline Search */
+.inline-search {
+  display: none;
+  align-items: center;
+  height: 100%;
+  padding: 0 5px;
+  -webkit-app-region: no-drag;
+}
+
+.inline-search.show {
+  display: flex;
+}
+
+.inline-search input {
+  width: 200px;
+  height: 24px;
+  background-color: #3a3a3a;
+  color: #f0f0f0;
+  border: 1px solid #555;
+  border-radius: 3px;
+  padding: 0 8px;
+  margin-right: 5px;
+  font-size: 12px;
+}
+
+.inline-search button {
+  background-color: #3a3a3a;
+  color: #cccccc;
+  border: 1px solid #555;
+  border-radius: 3px;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 2px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.inline-search button:hover {
+  background-color: #4a4a4a;
 }
 
 /* Tab bar styles */
 .tabs {
   display: flex;
-  height: 36px;
+  height: 32px;
   background-color: #252526;
   overflow-x: auto;
   white-space: nowrap;
+  scrollbar-width: none; /* Firefox */
+}
+
+.tabs::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
 }
 
 .tab {
@@ -90,7 +294,7 @@ body, html {
   padding: 0 12px;
   height: 100%;
   min-width: 120px;
-  max-width: 200px;
+  max-width: 180px;
   background-color: #2d2d2d;
   color: #cccccc;
   border-right: 1px solid #1e1e1e;
@@ -104,6 +308,8 @@ body, html {
 .tab.active {
   background-color: #1e1e1e;
   color: #ffffff;
+  border-top: 2px solid #007acc;
+  padding-top: 0;
 }
 
 .tab-title {
@@ -111,6 +317,7 @@ body, html {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  font-size: 12px;
 }
 
 .tab-close {
@@ -147,6 +354,7 @@ body, html {
   flex: 1;
   position: relative;
   overflow: hidden;
+  background-color: #1e1e1e;
 }
 
 .terminal-instance {
@@ -154,6 +362,7 @@ body, html {
   width: 100%;
   height: 100%;
   display: none;
+  padding: 2px;
 }
 
 .terminal-instance.active {
@@ -162,13 +371,22 @@ body, html {
 
 /* Status bar styles */
 .status-bar {
-  height: 24px;
+  height: 22px;
   background-color: #007acc;
   color: #ffffff;
   display: flex;
   align-items: center;
+  justify-content: space-between;
   padding: 0 10px;
   font-size: 12px;
+}
+
+.status-items-left {
+  display: flex;
+}
+
+.status-items-right {
+  display: flex;
 }
 
 .status-item {
@@ -196,6 +414,8 @@ body, html {
   padding: 8px 12px;
   color: #cccccc;
   cursor: pointer;
+  display: flex;
+  align-items: center;
 }
 
 .context-menu-item:hover {
@@ -335,7 +555,9 @@ body, html {
 /* Themes */
 .theme-dark {
   --bg-color: #1e1e1e;
-  --header-bg: #333;
+  --title-bar-bg: #252526;
+  --header-bg: #252526;
+  --menu-bg: #333333;
   --toolbar-bg: #252526;
   --tab-bg: #2d2d2d;
   --tab-active-bg: #1e1e1e;
@@ -346,7 +568,9 @@ body, html {
 
 .theme-light {
   --bg-color: #f5f5f5;
+  --title-bar-bg: #e0e0e0;
   --header-bg: #e0e0e0;
+  --menu-bg: #d4d4d4;
   --toolbar-bg: #f0f0f0;
   --tab-bg: #e5e5e5;
   --tab-active-bg: #ffffff;
@@ -355,46 +579,30 @@ body, html {
   --status-bar-bg: #0098ff;
 }
 
-/* Search panel */
-.search-panel {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background-color: #252526;
-  border: 1px solid #3a3a3a;
-  border-radius: 3px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-  padding: 8px;
-  display: none;
-  flex-direction: row;
-  align-items: center;
-  z-index: 100;
+/* Make sure the terminal takes full height */
+.xterm {
+  height: 100%;
 }
 
-.search-panel.show {
-  display: flex;
+.xterm-viewport {
+  overflow-y: auto;
 }
 
-.search-panel input {
-  width: 200px;
-  padding: 5px 8px;
-  background-color: #3a3a3a;
-  color: #f0f0f0;
-  border: 1px solid #555;
-  border-radius: 3px;
-  margin-right: 8px;
+/* Remove all browser-related UI elements */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
 }
 
-.search-panel button {
-  background-color: #3a3a3a;
-  color: #cccccc;
-  border: 1px solid #555;
-  border-radius: 3px;
-  padding: 5px 8px;
-  margin-left: 4px;
-  cursor: pointer;
+::-webkit-scrollbar-track {
+  background: #1e1e1e;
 }
 
-.search-panel button:hover {
-  background-color: #4a4a4a;
+::-webkit-scrollbar-thumb {
+  background: #555;
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #777;
 }

@@ -4,6 +4,9 @@ const os = require('os');
 const pty = require('node-pty');
 const fs = require('fs');
 
+// Disable hardware acceleration to fix GPU crashes
+app.disableHardwareAcceleration();
+
 // Keep global references to prevent garbage collection
 let mainWindow;
 let ptyProcesses = {};
@@ -68,8 +71,19 @@ function createWindow() {
       nodeIntegration: false
     },
     backgroundColor: settings.appearance.theme === 'dark' ? '#1e1e1e' : '#f5f5f5',
-    show: false
+    show: false,
+    frame: true,
+    autoHideMenuBar: true, // Hide the menu bar by default
+    titleBarStyle: 'hidden', // Hide title bar on all platforms
+    titleBarOverlay: {
+      color: '#252526',
+      symbolColor: '#ffffff',
+      height: 38
+    }
   });
+
+  // Remove the default menu completely
+  Menu.setApplicationMenu(null);
 
   // Load the index.html file
   mainWindow.loadFile('index.html');
@@ -87,149 +101,6 @@ function createWindow() {
     killAllPtyProcesses();
     mainWindow = null;
   });
-
-  // Create application menu
-  createApplicationMenu();
-}
-
-function createApplicationMenu() {
-  const isMac = process.platform === 'darwin';
-  
-  const template = [
-    // App menu (macOS only)
-    ...(isMac ? [{
-      label: app.name,
-      submenu: [
-        { role: 'about' },
-        { type: 'separator' },
-        { role: 'services' },
-        { type: 'separator' },
-        { role: 'hide' },
-        { role: 'hideothers' },
-        { role: 'unhide' },
-        { type: 'separator' },
-        { role: 'quit' }
-      ]
-    }] : []),
-    
-    // File menu
-    {
-      label: 'File',
-      submenu: [
-        {
-          label: 'New Terminal',
-          accelerator: 'CmdOrCtrl+Shift+N',
-          click: () => {
-            mainWindow.webContents.send('menu:new-terminal');
-          }
-        },
-        { type: 'separator' },
-        {
-          label: 'Settings',
-          click: () => {
-            mainWindow.webContents.send('menu:settings');
-          }
-        },
-        { type: 'separator' },
-        isMac ? { role: 'close' } : { role: 'quit' }
-      ]
-    },
-    
-    // Edit menu
-    {
-      label: 'Edit',
-      submenu: [
-        { role: 'undo' },
-        { role: 'redo' },
-        { type: 'separator' },
-        { role: 'cut' },
-        { role: 'copy' },
-        { role: 'paste' },
-        { type: 'separator' },
-        {
-          label: 'Find',
-          accelerator: 'CmdOrCtrl+F',
-          click: () => {
-            mainWindow.webContents.send('menu:find');
-          }
-        }
-      ]
-    },
-    
-    // View menu
-    {
-      label: 'View',
-      submenu: [
-        { role: 'reload' },
-        { role: 'forceReload' },
-        { role: 'toggleDevTools' },
-        { type: 'separator' },
-        { role: 'resetZoom' },
-        { role: 'zoomIn' },
-        { role: 'zoomOut' },
-        { type: 'separator' },
-        { role: 'togglefullscreen' },
-        { type: 'separator' },
-        {
-          label: 'Toggle Theme',
-          click: () => {
-            mainWindow.webContents.send('menu:toggle-theme');
-          }
-        }
-      ]
-    },
-    
-    // Terminal menu
-    {
-      label: 'Terminal',
-      submenu: [
-        {
-          label: 'Clear',
-          accelerator: 'CmdOrCtrl+K',
-          click: () => {
-            mainWindow.webContents.send('menu:clear');
-          }
-        },
-        { type: 'separator' },
-        {
-          label: 'Next Tab',
-          accelerator: 'CmdOrCtrl+Tab',
-          click: () => {
-            mainWindow.webContents.send('menu:next-tab');
-          }
-        },
-        {
-          label: 'Previous Tab',
-          accelerator: 'CmdOrCtrl+Shift+Tab',
-          click: () => {
-            mainWindow.webContents.send('menu:prev-tab');
-          }
-        }
-      ]
-    },
-    
-    // Help menu
-    {
-      label: 'Help',
-      submenu: [
-        {
-          label: 'About',
-          click: () => {
-            mainWindow.webContents.send('menu:about');
-          }
-        },
-        {
-          label: 'Learn More',
-          click: async () => {
-            await shell.openExternal('https://github.com/electron/electron');
-          }
-        }
-      ]
-    }
-  ];
-  
-  const menu = Menu.buildFromTemplate(template);
-  Menu.setApplicationMenu(menu);
 }
 
 // Create a new PTY process
@@ -319,6 +190,33 @@ function setupIPC() {
   ipcMain.on('settings:set', (event, newSettings) => {
     settings = { ...settings, ...newSettings };
     saveSettings();
+  });
+  
+  // Window management
+  ipcMain.on('window:close', () => {
+    app.quit();
+  });
+
+  ipcMain.on('window:minimize', () => {
+    if (mainWindow) {
+      mainWindow.minimize();
+    }
+  });
+
+  ipcMain.on('window:maximize', () => {
+    if (mainWindow) {
+      if (mainWindow.isMaximized()) {
+        mainWindow.unmaximize();
+      } else {
+        mainWindow.maximize();
+      }
+    }
+  });
+  
+  ipcMain.on('window:toggle-fullscreen', () => {
+    if (mainWindow) {
+      mainWindow.setFullScreen(!mainWindow.isFullScreen());
+    }
   });
 }
 

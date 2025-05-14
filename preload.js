@@ -54,6 +54,23 @@ contextBridge.exposeInMainWorld(
       ipcRenderer.send('settings:set', settings);
     },
     
+    // Window management
+    closeWindow: () => {
+      ipcRenderer.send('window:close');
+    },
+    
+    minimizeWindow: () => {
+      ipcRenderer.send('window:minimize');
+    },
+    
+    maximizeWindow: () => {
+      ipcRenderer.send('window:maximize');
+    },
+    
+    toggleFullscreen: () => {
+      ipcRenderer.send('window:toggle-fullscreen');
+    },
+    
     // Menu event handlers
     onMenuNewTerminal: (callback) => {
       if (typeof callback !== 'function') {
