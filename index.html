@@ -9,83 +9,85 @@
 </head>
 <body>
   <div class="app-container">
-    <!-- Custom Title Bar -->
-    <div class="title-bar">
-      <div class="title-bar-drag-region">
-        <div class="app-icon">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M5 7H19V17H5V7Z" stroke="currentColor" stroke-width="2" />
-            <path d="M8 11L12 14L16 11" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
-          </svg>
-        </div>
-        <div class="app-title">PowerShell Terminal</div>
+    <!-- Unified Header Bar -->
+    <div class="unified-header">
+      <div class="app-icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M5 7H19V17H5V7Z" stroke="currentColor" stroke-width="2" />
+          <path d="M8 11L12 14L16 11" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+        </svg>
       </div>
+      <div class="app-title">PowerShell Terminal</div>
+
+      <!-- Menu Items -->
+      <div class="menu-bar">
+        <div class="menu-item" data-menu="file">File</div>
+        <div class="menu-item" data-menu="edit">Edit</div>
+        <div class="menu-item" data-menu="view">View</div>
+        <div class="menu-item" data-menu="terminal">Terminal</div>
+        <div class="menu-item" data-menu="help">Help</div>
+      </div>
+
+      <!-- Action Buttons moved to left side -->
+      <div class="action-buttons">
+        <button id="new-tab-btn" class="action-button" title="New Terminal (Ctrl+Shift+N)">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M8 3V13M3 8H13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </button>
+        <button id="search-btn" class="action-button" title="Search (Ctrl+F)">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="6.5" cy="6.5" r="4" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M10 10L13 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </button>
+        <button id="clear-btn" class="action-button" title="Clear Terminal (Ctrl+K)">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M2 4H14M6 4V12M10 4V12M3 4L4 12H12L13 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </button>
+        <button id="settings-btn" class="action-button" title="Settings">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M8 11C9.65685 11 11 9.65685 11 8C11 6.34315 9.65685 5 8 5C6.34315 5 5 6.34315 5 8C5 9.65685 6.34315 11 8 11Z" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M8 2V3M8 13V14M2 8H3M13 8H14M3.5 3.5L4.5 4.5M12.5 12.5L11.5 11.5M12.5 3.5L11.5 4.5M3.5 12.5L4.5 11.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </button>
+        <button id="theme-toggle-btn" class="action-button" title="Toggle Light/Dark Theme">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M8 13C10.7614 13 13 10.7614 13 8C13 5.23858 10.7614 3 8 3C5.23858 3 3 5.23858 3 8C3 10.7614 5.23858 13 8 13Z" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M8 3V1M8 15V13M3 8H1M15 8H13M4.5 4.5L3 3M13 13L11.5 11.5M11.5 4.5L13 3M3 13L4.5 11.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Spacer to push window controls to the right -->
+      <div class="header-spacer"></div>
+
+      <!-- Search Input (Hidden by default) -->
+      <div id="inline-search" class="inline-search">
+        <input type="text" id="inline-search-input" placeholder="Search..." />
+        <button id="inline-search-prev" title="Previous Match">◀</button>
+        <button id="inline-search-next" title="Next Match">▶</button>
+        <button id="inline-search-close" title="Close Search">✕</button>
+      </div>
+
+      <!-- Window Controls -->
       <div class="window-controls">
         <button id="minimize-btn" class="window-control minimize">
-          <svg width="12" height="12" viewBox="0 0 12 12">
-            <rect x="2" y="5.5" width="8" height="1" fill="currentColor"/>
+          <svg width="10" height="10" viewBox="0 0 10 10">
+            <rect x="1" y="4.5" width="8" height="1" fill="currentColor"/>
           </svg>
         </button>
         <button id="maximize-btn" class="window-control maximize">
-          <svg width="12" height="12" viewBox="0 0 12 12">
-            <rect x="2.5" y="2.5" width="7" height="7" stroke="currentColor" fill="none"/>
+          <svg width="10" height="10" viewBox="0 0 10 10">
+            <rect x="1.5" y="1.5" width="7" height="7" stroke="currentColor" fill="none" stroke-width="1"/>
           </svg>
         </button>
         <button id="close-btn" class="window-control close">
-          <svg width="12" height="12" viewBox="0 0 12 12">
-            <path d="M3 3L9 9M9 3L3 9" stroke="currentColor" stroke-width="1.2"/>
+          <svg width="10" height="10" viewBox="0 0 10 10">
+            <path d="M1.5 1.5L8.5 8.5M8.5 1.5L1.5 8.5" stroke="currentColor" stroke-width="1.1"/>
           </svg>
         </button>
-      </div>
-    </div>
-
-    <!-- Integrated Menu Bar -->
-    <div class="integrated-menu-bar">
-      <div class="menu-section menu-left">
-        <!-- Application Menu -->
-        <div class="app-menu">
-          <div class="menu-item" data-menu="file">File</div>
-          <div class="menu-item" data-menu="edit">Edit</div>
-          <div class="menu-item" data-menu="view">View</div>
-          <div class="menu-item" data-menu="terminal">Terminal</div>
-          <div class="menu-item" data-menu="help">Help</div>
-        </div>
-      </div>
-      
-      <div class="menu-section menu-center">
-        <!-- Action Buttons -->
-        <div class="action-buttons">
-          <button id="new-tab-btn" class="action-button" title="New Terminal (Ctrl+Shift+N)">
-            <span class="button-icon">+</span>
-            <span class="button-text">New Terminal</span>
-          </button>
-          <button id="search-btn" class="action-button" title="Search (Ctrl+F)">
-            <span class="button-icon">🔍</span>
-            <span class="button-text">Search</span>
-          </button>
-          <button id="clear-btn" class="action-button" title="Clear Terminal (Ctrl+K)">
-            <span class="button-icon">🗑️</span>
-            <span class="button-text">Clear</span>
-          </button>
-          <button id="settings-btn" class="action-button" title="Settings">
-            <span class="button-icon">⚙️</span>
-            <span class="button-text">Settings</span>
-          </button>
-          <button id="theme-toggle-btn" class="action-button" title="Toggle Light/Dark Theme">
-            <span class="button-icon">🌓</span>
-            <span class="button-text">Theme</span>
-          </button>
-        </div>
-      </div>
-      
-      <div class="menu-section menu-right">
-        <!-- Search Input (Hidden by default) -->
-        <div id="inline-search" class="inline-search">
-          <input type="text" id="inline-search-input" placeholder="Search..." />
-          <button id="inline-search-prev" title="Previous Match">◀</button>
-          <button id="inline-search-next" title="Next Match">▶</button>
-          <button id="inline-search-close" title="Close Search">✕</button>
-        </div>
       </div>
     </div>
 

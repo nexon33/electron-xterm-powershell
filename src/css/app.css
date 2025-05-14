@@ -21,24 +21,17 @@ body, html {
   width: 100vw;
 }
 
-/* Custom Title Bar */
-.title-bar {
+/* Unified header bar */
+.unified-header {
   height: 32px;
   background-color: #252526;
   display: flex;
   align-items: center;
-  justify-content: space-between;
   -webkit-app-region: drag;
   z-index: 1000;
   user-select: none;
   border-bottom: 1px solid #333;
-}
-
-.title-bar-drag-region {
-  display: flex;
-  align-items: center;
-  flex: 1;
-  height: 100%;
+  padding: 0;
 }
 
 .app-icon {
@@ -58,81 +51,24 @@ body, html {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  width: 150px;
 }
 
-.window-controls {
+/* Menu bar */
+.menu-bar {
   display: flex;
   height: 100%;
   -webkit-app-region: no-drag;
 }
 
-.window-control {
-  width: 46px;
-  height: 100%;
-  border: none;
-  background: transparent;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: #cccccc;
-  cursor: pointer;
-  outline: none;
-}
-
-.window-control:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-}
-
-.window-control.close:hover {
-  background-color: #e81123;
-}
-
-/* Integrated Menu Bar */
-.integrated-menu-bar {
-  height: 36px;
-  background-color: #333333;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 0 0 10px;
-  z-index: 100;
-  border-bottom: 1px solid #444;
-}
-
-.menu-section {
-  display: flex;
-  align-items: center;
-}
-
-.menu-left {
-  display: flex;
-}
-
-.menu-center {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-}
-
-.menu-right {
-  display: flex;
-  margin-right: 10px;
-}
-
-/* Application Menu */
-.app-menu {
-  display: flex;
-  height: 100%;
-}
-
 .menu-item {
-  padding: 0 15px;
+  padding: 0 10px;
   height: 100%;
   display: flex;
   align-items: center;
   cursor: pointer;
   user-select: none;
-  font-size: 13px;
+  font-size: 12px;
   -webkit-app-region: no-drag;
 }
 
@@ -144,22 +80,24 @@ body, html {
   background-color: #3a3a3a;
 }
 
-/* Action Buttons */
+/* Action Buttons - Now positioned at the left */
 .action-buttons {
   display: flex;
   height: 100%;
+  -webkit-app-region: no-drag;
 }
 
 .action-button {
   background: none;
   border: none;
   color: #cccccc;
-  padding: 0 12px;
+  width: 30px;
   height: 100%;
   cursor: pointer;
   font-size: 13px;
   display: flex;
   align-items: center;
+  justify-content: center;
   border-radius: 0;
   -webkit-app-region: no-drag;
 }
@@ -172,62 +110,14 @@ body, html {
   background-color: #3a3a3a;
 }
 
-.button-icon {
-  margin-right: 6px;
-  font-size: 14px;
-}
-
-/* Dropdown Menus */
-.dropdown-menu {
-  position: absolute;
-  top: 68px; /* Title bar + menu bar height */
-  left: 0;
-  background-color: #252526;
-  border: 1px solid #3a3a3a;
-  border-top: none;
-  min-width: 220px;
-  z-index: 1000;
-  display: none;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-}
-
-.dropdown-menu.show {
-  display: block;
-}
-
-.dropdown-item {
-  padding: 8px 15px;
-  color: #cccccc;
-  cursor: pointer;
-  font-size: 13px;
-  display: flex;
-  align-items: center;
-}
-
-.dropdown-item:hover {
-  background-color: #3a3a3a;
-}
-
-.menu-icon {
+.action-button svg {
   width: 16px;
-  text-align: center;
-  margin-right: 10px;
+  height: 16px;
 }
 
-.menu-text {
+/* Spacer to push window controls to right */
+.header-spacer {
   flex: 1;
-}
-
-.menu-shortcut {
-  margin-left: 15px;
-  opacity: 0.6;
-  font-size: 11px;
-}
-
-.dropdown-separator {
-  height: 1px;
-  background-color: #3a3a3a;
-  margin: 4px 0;
 }
 
 /* Inline Search */
@@ -235,7 +125,7 @@ body, html {
   display: none;
   align-items: center;
   height: 100%;
-  padding: 0 5px;
+  margin-right: 10px;
   -webkit-app-region: no-drag;
 }
 
@@ -244,14 +134,14 @@ body, html {
 }
 
 .inline-search input {
-  width: 200px;
-  height: 24px;
+  width: 180px;
+  height: 22px;
   background-color: #3a3a3a;
   color: #f0f0f0;
   border: 1px solid #555;
   border-radius: 3px;
   padding: 0 8px;
-  margin-right: 5px;
+  margin-right: 4px;
   font-size: 12px;
 }
 
@@ -260,18 +150,52 @@ body, html {
   color: #cccccc;
   border: 1px solid #555;
   border-radius: 3px;
-  width: 24px;
-  height: 24px;
+  width: 22px;
+  height: 22px;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-left: 2px;
   cursor: pointer;
-  font-size: 12px;
+  font-size: 10px;
 }
 
 .inline-search button:hover {
   background-color: #4a4a4a;
+}
+
+/* Window Controls */
+.window-controls {
+  display: flex;
+  height: 100%;
+  -webkit-app-region: no-drag;
+}
+
+.window-control {
+  width: 36px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #cccccc;
+  cursor: pointer;
+  outline: none;
+  -webkit-app-region: no-drag;
+}
+
+.window-control svg {
+  width: 10px;
+  height: 10px;
+}
+
+.window-control:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.window-control.close:hover {
+  background-color: #e81123;
 }
 
 /* Tab bar styles */
@@ -393,6 +317,59 @@ body, html {
   margin-right: 15px;
   display: flex;
   align-items: center;
+}
+
+/* Dropdown Menus */
+.dropdown-menu {
+  position: absolute;
+  top: 32px; /* Unified header height */
+  left: 0;
+  background-color: #252526;
+  border: 1px solid #3a3a3a;
+  border-top: none;
+  min-width: 220px;
+  z-index: 1000;
+  display: none;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.dropdown-menu.show {
+  display: block;
+}
+
+.dropdown-item {
+  padding: 8px 15px;
+  color: #cccccc;
+  cursor: pointer;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+}
+
+.dropdown-item:hover {
+  background-color: #3a3a3a;
+}
+
+.menu-icon {
+  width: 16px;
+  text-align: center;
+  margin-right: 10px;
+}
+
+.menu-text {
+  flex: 1;
+}
+
+.menu-shortcut {
+  margin-left: 15px;
+  opacity: 0.6;
+  font-size: 11px;
+}
+
+.dropdown-separator {
+  height: 1px;
+  background-color: #3a3a3a;
+  margin: 4px 0;
 }
 
 /* Context menu */
@@ -605,4 +582,20 @@ body, html {
 
 ::-webkit-scrollbar-thumb:hover {
   background: #777;
+}
+
+/* Hide any unnecessary UI elements */
+.titlebar {
+  display: none !important;
+}
+
+/* Fix for button text in small windows */
+@media (max-width: 800px) {
+  .button-text {
+    display: none;
+  }
+  
+  .action-button {
+    width: 30px;
+  }
 }
