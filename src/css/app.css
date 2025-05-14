@@ -125,7 +125,7 @@ body, html {
   display: none;
   align-items: center;
   height: 100%;
-  margin-right: 10px;
+  margin-right: 34px; /* Moved 24px to the left by increasing right margin */
   -webkit-app-region: no-drag;
 }
 
